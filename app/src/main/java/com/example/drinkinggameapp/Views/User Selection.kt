@@ -116,7 +116,7 @@ fun addedPlayer() {
         ) {
             Icon(
                 Icons.Rounded.Person,
-                contentDescription = "Person picture",
+                contentDescription = "",
                 modifier = Modifier
                     .padding(start = 5.dp)
             )
