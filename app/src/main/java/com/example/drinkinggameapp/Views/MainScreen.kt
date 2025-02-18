@@ -42,15 +42,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.drinkinggameapp.SpinWheelScreen
-import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
-//@Preview
+@Preview
 @Composable
 fun MainScreen(
-    viewModel: QuestionsViewModel
+    //viewModel: QuestionsViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -75,8 +74,7 @@ fun MainScreen(
         value = LocalLayoutDirection provides LayoutDirection.Rtl
     ) {
         ModalNavigationDrawer(
-            modifier = Modifier
-                .background(Color.White),
+            modifier = Modifier.background(Color.White),
             drawerState = drawerState,
             gesturesEnabled = true,
             drawerContent = {
@@ -90,51 +88,49 @@ fun MainScreen(
                         Spacer(Modifier.height(12.dp))
 
                         Row {
-                            IconButton(
-                                onClick = {
-                                    toggleDrawer()
-                                }
-                            ) {
+                            IconButton(onClick = {
+                                toggleDrawer()
+                            }) {
                                 Icon(
                                     Icons.Filled.Menu,
                                     contentDescription = null,
+                                    //tint = Color.White
                                 )
                             }
 
                             Text(
                                 "Einstellungen",
-                                modifier = Modifier
-                                    .padding(top = 9.dp, start = 120.dp),
+                                modifier = Modifier.padding(top = 9.dp, start = 120.dp),
                                 style = MaterialTheme.typography.titleLarge,
                             )
                         }
 
                         HorizontalDivider()
 
-                        NavigationDrawerItem(
-                            label = { Text("Start Screen") },
+                        NavigationDrawerItem(label = { Text("Start Screen") },
                             selected = false,
                             onClick = {
                                 toggleDrawer()
                                 navController.navigate("mainScreen")
-                            }
-                        )
-                        NavigationDrawerItem(
-                            label = { Text("Card Game") },
+                            })
+                        NavigationDrawerItem(label = { Text("Spielerauswahl") },
+                            selected = false,
+                            onClick = {
+                                toggleDrawer()
+                                navController.navigate("userSelection")
+                            })
+                        NavigationDrawerItem(label = { Text("Card Game") },
                             selected = false,
                             onClick = {
                                 toggleDrawer()
                                 navController.navigate("cardGame")
-                            }
-                        )
-                        NavigationDrawerItem(
-                            label = { Text("Spin the Wheel Game") },
+                            })
+                        NavigationDrawerItem(label = { Text("Spin the Wheel Game") },
                             selected = false,
                             onClick = {
                                 toggleDrawer()
                                 navController.navigate("spinWheelScreen")
-                            }
-                        )
+                            })
                         HorizontalDivider()
                     }
                 }
@@ -144,21 +140,22 @@ fun MainScreen(
                 value = LocalLayoutDirection provides LayoutDirection.Ltr
             ) {
                 //Screen Inhalt
-                ScreenMenuItem(
-                    scope,
-                    drawerState
-                )
+                ScreenMenuItem(scope, drawerState)
 
                 NavHost(
                     navController = navController,
-                    startDestination = "mainScreen"
+                    startDestination = "userSelection"
                 ) {
                     composable("mainScreen") {
                         StartScreen()
                     }
 
+                    composable("userSelection") {
+                        UserSelection()
+                    }
+
                     composable("cardGame") {
-                        CardGenerator(viewModel)
+                        //CardGenerator(viewModel)
                     }
 
                     composable("spinWheelScreen") {
@@ -173,8 +170,7 @@ fun MainScreen(
 @Composable
 fun StartScreen() {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -186,12 +182,12 @@ fun StartScreen() {
 
 @Composable
 fun ScreenMenuItem(
-    scope: CoroutineScope,
-    drawerState: DrawerState
+    scope: CoroutineScope, drawerState: DrawerState
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(50.dp)
             .padding(top = 5.dp),
         horizontalArrangement = Arrangement.End
     ) {
@@ -206,7 +202,8 @@ fun ScreenMenuItem(
         ) {
             Icon(
                 Icons.Filled.Menu,
-                contentDescription = null,
+                tint = Color.Black,
+                contentDescription = "Test",
             )
         }
     }

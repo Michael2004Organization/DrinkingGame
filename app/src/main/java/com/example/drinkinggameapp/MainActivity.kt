@@ -71,7 +71,8 @@ class MainActivity : ComponentActivity() {
             factory = QuestionViewModelFactory(db.questionsDao())
         )
 
-        MainScreen(viewModel)
+        //MainScreen(viewModel)
+        MainScreen()
     }
 }
 
