@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
-import com.example.drinkinggameapp.Database.QuestionDatabase
+import com.example.drinkinggameapp.Database.AppDatabase
 import com.example.drinkinggameapp.Models.SpinWheelItem
+import com.example.drinkinggameapp.ViewModels.MainViewModel
+import com.example.drinkinggameapp.ViewModels.PlayersViewModel
 import com.example.drinkinggameapp.ViewModels.QuestionViewModelFactory
 import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 import com.example.drinkinggameapp.Views.MainScreen
@@ -44,6 +43,9 @@ import androidx.compose.runtime.remember as remember1
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val context = applicationContext
+        //context.deleteDatabase("question_database")
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -65,14 +67,18 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MyApp(context: Context) {
-        val db = QuestionDatabase.getDatabase(context)
+        //val db = AppDatabase.getDatabase(context)
 
-        val viewModel: QuestionsViewModel = viewModel(
-            factory = QuestionViewModelFactory(db.questionsDao())
-        )
+//        val viewModel: QuestionsViewModel = viewModel(
+//            factory = QuestionViewModelFactory(db.questionsDao())
+//        )
+
+        val viewModel: MainViewModel = viewModel()
+        val playersList = viewModel.playersList
 
         //MainScreen(viewModel)
-        MainScreen()
+        MainScreen(viewModel)
+        //MainScreen()
     }
 }
 

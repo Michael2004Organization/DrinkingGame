@@ -1,5 +1,6 @@
 package com.example.drinkinggameapp.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,14 @@ import kotlinx.coroutines.withContext
 class QuestionsViewModel(
     private val dao: QuestionsDao
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            dao.getAllQuestions().collect() { questions ->
+                Log.d("RoomTest", "Question in DB: $questions")
+            }
+        }
+    }
 
     fun onEvent(event: QuestionsEvent) {
         when (event) {

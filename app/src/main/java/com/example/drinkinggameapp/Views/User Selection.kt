@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,14 +35,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.drinkinggameapp.R
+import com.example.drinkinggameapp.ViewModels.MainViewModel
 
-@Preview
+//@Preview
 @Composable
-fun UserSelection() {
+fun UserSelection(
+    viewModel: MainViewModel
+) {
     Scaffold(
         modifier = Modifier
             .padding(top = 50.dp)
@@ -67,15 +71,15 @@ fun UserSelection() {
                 modifier = Modifier
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         //.clip(shape = RoundedCornerShape(20.dp))
-                        .padding(start = 20.dp, end = 20.dp, bottom = 300.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 50.dp, bottom = 20.dp)
                         .background(Color.White, shape = RoundedCornerShape(15.dp))
-                        .height(200.dp),
+                        .height(600.dp),
                 ) {
                     Row(
                         modifier = Modifier
@@ -95,11 +99,16 @@ fun UserSelection() {
                     }
                     val playerList = remember { mutableStateOf(listOf<String>()) }
 
-                    addPlayer(playerList)
+                    addPlayer(playerList, viewModel)
 
+                    val currentPlayersList by viewModel.playersList
+                        .collectAsState(initial = emptyList())
                     LazyColumn {
-                        items(playerList.value) { player ->
-                            addedPlayer(player)
+                        items(currentPlayersList) { player ->
+                            addedPlayer(player.playerName,
+                                onClick = {
+                                    viewModel.deletePlayer(player.id, player.playerName)
+                                })
                         }
                     }
                 }
@@ -110,7 +119,8 @@ fun UserSelection() {
 
 @Composable
 fun addPlayer(
-    playerList: MutableState<List<String>>
+    playerList: MutableState<List<String>>,
+    viewModel: MainViewModel
 ) {
     var playerName by remember { mutableStateOf("") }
 
@@ -175,10 +185,16 @@ fun addPlayer(
             IconButton(
                 onClick = {
                     if (playerName.isNotEmpty()) {
+                        viewModel.addPlayer(playerName)
+
                         playerList.value = playerList.value + playerName
                         playerName = ""
                     } else {
+                        var playerAmount = playerList.value.size + 1
 
+                        playerList.value =
+                            playerList.value + "Spieler ${playerAmount}"
+                        playerName = ""
                     }
                 },
             ) {
@@ -196,7 +212,8 @@ fun addPlayer(
 
 @Composable
 fun addedPlayer(
-    player: String
+    player: String,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -206,25 +223,48 @@ fun addedPlayer(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(0.2f),
+                .weight(0.15f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 Icons.Rounded.Person,
-                contentDescription = "Person picture",
-                modifier = Modifier.padding(start = 5.dp)
+                contentDescription = "Player Icon",
+                modifier = Modifier
+                    .fillMaxSize()
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(1f),
+                .weight(0.70f),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = player,
+                style = TextStyle(
+                    color = Color.Black,
+                    fontSize = 25.sp
+                )
             )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.15f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconButton(
+                onClick = { onClick() },
+            ) {
+                Icon(
+                    Icons.Rounded.Delete,
+                    contentDescription = "Delete Player",
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
         }
     }
 }

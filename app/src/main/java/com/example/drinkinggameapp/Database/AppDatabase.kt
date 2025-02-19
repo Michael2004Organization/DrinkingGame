@@ -6,24 +6,26 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Questions::class],
-    version = 1,
+    entities = [Questions::class, Players::class],
+    version = 2,
     exportSchema = false
 )
-abstract class QuestionDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun questionsDao(): QuestionsDao
+    abstract fun playersDao(): PlayersDao
 
     companion object {
         @Volatile
-        private var INSTANCE: QuestionDatabase? = null
+        private var INSTANCE: AppDatabase? = null
 
-        fun getDatabase(context: Context): QuestionDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    QuestionDatabase::class.java,
-                    "question_database"
-                ).build()
+                    AppDatabase::class.java,
+                    name = "drinkingGameDatabase"
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

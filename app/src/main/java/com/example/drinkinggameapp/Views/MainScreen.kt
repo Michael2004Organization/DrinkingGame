@@ -41,15 +41,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.drinkinggameapp.Database.AppDatabase
 import com.example.drinkinggameapp.SpinWheelScreen
+import com.example.drinkinggameapp.ViewModels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@Preview
+//@Preview
 @Composable
 fun MainScreen(
-    //viewModel: QuestionsViewModel
+    //viewModel: QuestionsViewModel,
+    viewModel: MainViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -151,7 +154,7 @@ fun MainScreen(
                     }
 
                     composable("userSelection") {
-                        UserSelection()
+                        UserSelection(viewModel)
                     }
 
                     composable("cardGame") {
