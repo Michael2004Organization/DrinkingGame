@@ -12,7 +12,7 @@ interface PlayersDao {
     fun getAllPlayers(): Flow<List<Players>>
 
     @Query("Select COUNT(*) from players")
-    fun getPlayersCount(): Long
+    suspend fun getPlayersCount(): Int
 
     @Insert
     suspend fun addPlayer(players: Players)

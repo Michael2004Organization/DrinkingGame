@@ -34,16 +34,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.drinkinggameapp.Database.AppDatabase
+import com.example.drinkinggameapp.R
 import com.example.drinkinggameapp.SpinWheelScreen
 import com.example.drinkinggameapp.ViewModels.MainViewModel
+import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -51,7 +55,6 @@ import kotlinx.coroutines.launch
 //@Preview
 @Composable
 fun MainScreen(
-    //viewModel: QuestionsViewModel,
     viewModel: MainViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -154,11 +157,12 @@ fun MainScreen(
                     }
 
                     composable("userSelection") {
-                        UserSelection(viewModel)
+                        UserSelection(viewModel, navController)
+                        //UserSelection(viewModel)
                     }
 
                     composable("cardGame") {
-                        //CardGenerator(viewModel)
+                        CardGenerator(viewModel)
                     }
 
                     composable("spinWheelScreen") {
@@ -187,12 +191,15 @@ fun StartScreen() {
 fun ScreenMenuItem(
     scope: CoroutineScope, drawerState: DrawerState
 ) {
+    val backgroundColor: Color = colorResource(id = R.color.orange)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .padding(top = 5.dp),
-        horizontalArrangement = Arrangement.End
+            .background(color = backgroundColor),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
             onClick = {

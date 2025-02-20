@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.drinkinggameapp.ViewModels.MainViewModel
 import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 
 @Composable
@@ -51,11 +52,11 @@ fun width(): Int {
 //@Preview
 @Composable
 fun CardGenerator(
-    viewModel: QuestionsViewModel
+    viewModel: MainViewModel
 ) {
     //viewModel.getQuestion()
 
-    val question by viewModel.currentQuestion.collectAsState()
+    val question by viewModel.questionsViewModel.currentQuestion.collectAsState()
 
     var rotated by remember { mutableStateOf(false) }
 
@@ -104,11 +105,19 @@ fun CardGenerator(
 
                 if (!rotated) {
                     //QuestionCard(viewModel, questionText)
-                    GenerallCard(viewModel, "Frage:", questionText, { toggleFlip() })
+                    GenerallCard(
+                        viewModel.questionsViewModel,
+                        "Frage:",
+                        questionText,
+                        { toggleFlip() })
                     //GenerallCard("Frage:", questionText)
                 } else {
                     //AnswerCard(viewModel, rotation, answersText)
-                    GenerallCard(viewModel, "Antwort:", answersText, { toggleFlip() })
+                    GenerallCard(
+                        viewModel.questionsViewModel,
+                        "Antwort:",
+                        answersText,
+                        { toggleFlip() })
                     //GenerallCard("Antwort:", answersText)
                 }
             }

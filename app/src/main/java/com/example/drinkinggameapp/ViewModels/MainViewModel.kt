@@ -15,6 +15,9 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getDatabase(application)
 
+    val playersViewModel = PlayersViewModel(application)
+    val questionsViewModel = QuestionsViewModel(application)
+
     val playersList: Flow<List<Players>> = dao.playersDao().getAllPlayers()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
@@ -23,7 +26,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     //Questions
 
+
     //Players
+    fun addPlayerWithCount() {
+        viewModelScope.launch {
+            val count = dao.playersDao().getPlayersCount() + 1
+            val playerName = "Spieler $count"
+
+            dao.playersDao().addPlayer(Players(playerName = playerName))
+        }
+    }
+
     fun addPlayer(name: String) {
         viewModelScope.launch {
             dao.playersDao().addPlayer(Players(playerName = name))
@@ -34,15 +47,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             dao.playersDao().deletePlayer(Players(id = id, playerName = name))
         }
-    }
-
-    fun getPlayers(): Flow<List<Players>> {
-        var test = playersList
-
-        viewModelScope.launch {
-            test = dao.playersDao().getAllPlayers()
-        }
-
-        return test
     }
 }

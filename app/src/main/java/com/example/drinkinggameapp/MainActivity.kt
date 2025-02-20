@@ -55,30 +55,17 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .statusBarsPadding()
                 ) {
-                    //MainScreen()
-                    //StartScreen()
-                    //SpinWheelScreen()
-                    //AppNavigation()
-                    MyApp(context = this@MainActivity)
+                    MyApp()
                 }
             }
         }
     }
 
     @Composable
-    fun MyApp(context: Context) {
-        //val db = AppDatabase.getDatabase(context)
-
-//        val viewModel: QuestionsViewModel = viewModel(
-//            factory = QuestionViewModelFactory(db.questionsDao())
-//        )
-
+    fun MyApp() {
         val viewModel: MainViewModel = viewModel()
-        val playersList = viewModel.playersList
 
-        //MainScreen(viewModel)
         MainScreen(viewModel)
-        //MainScreen()
     }
 }
 

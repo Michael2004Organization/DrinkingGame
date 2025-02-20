@@ -1,10 +1,11 @@
 package com.example.drinkinggameapp.ViewModels
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.drinkinggameapp.Database.QuestionsDao
+import com.example.drinkinggameapp.Database.AppDatabase
 import com.example.drinkinggameapp.Database.QuestionsEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -17,8 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class QuestionsViewModel(
-    private val dao: QuestionsDao
+    application: Application
 ) : ViewModel() {
+    private val dao = AppDatabase.getDatabase(application).questionsDao()
 
     init {
         viewModelScope.launch {
@@ -84,12 +86,13 @@ class QuestionsViewModel(
 }
 
 class QuestionViewModelFactory(
-    private val dao: QuestionsDao
+    //private val dao: QuestionsDao
+    private val application: Application
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(QuestionsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return QuestionsViewModel(dao) as T
+            return QuestionsViewModel(application = application) as T
         }
         throw IllegalArgumentException("Unkwon ViewModel class")
     }
