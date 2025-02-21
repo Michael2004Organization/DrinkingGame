@@ -8,5 +8,6 @@ data class Players(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val playerName: String
+    val playerName: String,
+    val playerQuestioned: Boolean
 )

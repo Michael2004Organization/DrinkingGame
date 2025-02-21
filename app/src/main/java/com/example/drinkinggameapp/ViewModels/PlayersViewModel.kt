@@ -30,10 +30,4 @@ class PlayersViewModel(
             Log.d("RoomTest", "End")
         }
     }
-
-    fun addPlayer(player: String) {
-        viewModelScope.launch {
-            dao.addPlayer(Players(playerName = player))
-        }
-    }
 }

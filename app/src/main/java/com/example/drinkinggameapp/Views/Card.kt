@@ -1,6 +1,5 @@
 package com.example.drinkinggameapp.Views
 
-import android.view.RoundedCorner
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -21,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,9 +31,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.drinkinggameapp.R
 import com.example.drinkinggameapp.ViewModels.MainViewModel
 import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 
@@ -54,7 +56,10 @@ fun width(): Int {
 fun CardGenerator(
     viewModel: MainViewModel
 ) {
-    //viewModel.getQuestion()
+    val randomPlayer by viewModel.randomPlayer.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getRandomPlayer2()
+    }
 
     val question by viewModel.questionsViewModel.currentQuestion.collectAsState()
 
@@ -69,15 +74,38 @@ fun CardGenerator(
         rotated = !rotated
     }
 
+    //Colors, usw.
+    val backgroundColor: Color = colorResource(R.color.orange)
+
     Scaffold(
         modifier = Modifier
             .padding(top = 50.dp)
+            .background(color = backgroundColor)
     ) { padding ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.Red)
+                .padding(bottom = 50.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            var playerR = "No Player left"
+            randomPlayer?.let {
+                playerR = it.playerName
+            }
+
+            Text(
+                text = playerR,
+                color = Color.White,
+                fontSize = 35.sp
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .background(Color.White),
+                .padding(top = 42.dp)
+                .background(color = backgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -97,10 +125,10 @@ fun CardGenerator(
                     defaultElevation = 12.dp
                 ),
             ) {
-                val questionText: String
+                var questionText: String = "testQ"
                 questionText = question?.question ?: "No Questions available!"
 
-                val answersText: String
+                var answersText: String = "testA"
                 answersText = question?.answer ?: "No Questions available!"
 
                 if (!rotated) {

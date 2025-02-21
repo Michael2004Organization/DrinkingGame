@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +17,12 @@ interface PlayersDao {
 
     @Insert
     suspend fun addPlayer(players: Players)
+
+    @Update
+    suspend fun updatePlayer(players: Players)
+
+    @Query("Select * from players where playerQuestioned = 1 order by Random() limit 1")
+    suspend fun getRandomPlayer(): Players
 
     @Delete
     suspend fun deletePlayer(players: Players)

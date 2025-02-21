@@ -36,18 +36,14 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.drinkinggameapp.Database.AppDatabase
 import com.example.drinkinggameapp.R
 import com.example.drinkinggameapp.SpinWheelScreen
 import com.example.drinkinggameapp.ViewModels.MainViewModel
-import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -156,7 +152,8 @@ fun MainScreen(
                         StartScreen()
                     }
 
-                    composable("userSelection") {
+                    composable("userSelection") { backStackEntry ->
+                        val test = backStackEntry.arguments?.getString("playerid")?.toIntOrNull()
                         UserSelection(viewModel, navController)
                         //UserSelection(viewModel)
                     }

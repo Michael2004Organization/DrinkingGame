@@ -135,7 +135,11 @@ fun UserSelection(
                                 player = player.playerName,
                                 isUserAdd = false,
                                 onClick = {
-                                    viewModel.deletePlayer(player.id, player.playerName)
+                                    viewModel.deletePlayer(
+                                        player.id,
+                                        player.playerName,
+                                        player.playerQuestioned
+                                    )
                                 })
                         }
                     }
@@ -152,6 +156,11 @@ fun UserSelection(
                 Button(
                     modifier = Modifier,
                     onClick = {
+
+//                        val testP = viewModel.getRandomPlayer { player->
+//
+//                        }
+
                         navController.navigate("cardGame")
                     },
                     colors = ButtonDefaults.buttonColors(

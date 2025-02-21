@@ -1,12 +1,15 @@
 package com.example.drinkinggameapp.ViewModels
 
 import android.app.Application
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.drinkinggameapp.Database.AppDatabase
 import com.example.drinkinggameapp.Database.Players
 import com.example.drinkinggameapp.Database.Questions
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -33,19 +36,49 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val count = dao.playersDao().getPlayersCount() + 1
             val playerName = "Spieler $count"
 
-            dao.playersDao().addPlayer(Players(playerName = playerName))
+            dao.playersDao().addPlayer(Players(playerName = playerName, playerQuestioned = false))
         }
     }
 
     fun addPlayer(name: String) {
         viewModelScope.launch {
-            dao.playersDao().addPlayer(Players(playerName = name))
+            dao.playersDao().addPlayer(Players(playerName = name, playerQuestioned = false))
         }
     }
 
-    fun deletePlayer(id: Int, name: String) {
+    fun getRandomPlayer(onResult: (Players) -> Unit) {
         viewModelScope.launch {
-            dao.playersDao().deletePlayer(Players(id = id, playerName = name))
+            val randomPlayer = dao.playersDao().getRandomPlayer()
+            onResult(randomPlayer)
+        }
+    }
+
+    private val _randomPlayer = MutableStateFlow<Players?>(null)
+    val randomPlayer: StateFlow<Players?> get() = _randomPlayer
+    fun getRandomPlayer2() {
+        viewModelScope.launch {
+            val player = dao.playersDao().getRandomPlayer()
+            _randomPlayer.value = player
+        }
+    }
+
+    fun deletePlayer(id: Int, name: String, playerQuestioned: Boolean) {
+        viewModelScope.launch {
+            dao.playersDao().deletePlayer(
+                Players(
+                    id = id,
+                    playerName = name,
+                    playerQuestioned = playerQuestioned
+                )
+            )
+        }
+    }
+
+    fun updatePlayer(id: Int, name: String, playerQuestioned: Boolean) {
+        viewModelScope.launch {
+            dao.playersDao().updatePlayer(
+                Players(id = id, playerName = name, playerQuestioned = playerQuestioned)
+            )
         }
     }
 }
