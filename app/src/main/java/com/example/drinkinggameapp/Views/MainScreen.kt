@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -69,101 +70,114 @@ fun MainScreen(
         }
     }
 
-    // Header
-    GameNavbar()
-
-    CompositionLocalProvider(
-        value = LocalLayoutDirection provides LayoutDirection.Rtl
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        ModalNavigationDrawer(
-            modifier = Modifier.background(Color.White),
-            drawerState = drawerState,
-            gesturesEnabled = true,
-            drawerContent = {
-                ModalDrawerSheet {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(horizontal = 16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Spacer(Modifier.height(12.dp))
+        // Top-Header
+        GameNavbar()
 
-                        Row {
-                            IconButton(onClick = {
-                                toggleDrawer()
-                            }) {
-                                Icon(
-                                    Icons.Filled.Menu,
-                                    contentDescription = null,
-                                    //tint = Color.White
+        CompositionLocalProvider(
+            value = LocalLayoutDirection provides LayoutDirection.Rtl
+        ) {
+            ModalNavigationDrawer(
+                modifier = Modifier.background(Color.White),
+                drawerState = drawerState,
+                gesturesEnabled = true,
+                drawerContent = {
+                    ModalDrawerSheet {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(horizontal = 16.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Spacer(Modifier.height(12.dp))
+
+                            Row {
+                                IconButton(onClick = {
+                                    toggleDrawer()
+                                }) {
+                                    Icon(
+                                        Icons.Filled.Menu,
+                                        contentDescription = null,
+                                        //tint = Color.White
+                                    )
+                                }
+
+                                Text(
+                                    "Einstellungen",
+                                    modifier = Modifier.padding(top = 9.dp, start = 120.dp),
+                                    style = MaterialTheme.typography.titleLarge,
                                 )
                             }
 
-                            Text(
-                                "Einstellungen",
-                                modifier = Modifier.padding(top = 9.dp, start = 120.dp),
-                                style = MaterialTheme.typography.titleLarge,
-                            )
+                            HorizontalDivider()
+
+                            NavigationDrawerItem(label = { Text("Start Screen") },
+                                selected = false,
+                                onClick = {
+                                    toggleDrawer()
+                                    navController.navigate("mainScreen")
+                                })
+                            NavigationDrawerItem(label = { Text("Spielerauswahl") },
+                                selected = false,
+                                onClick = {
+                                    toggleDrawer()
+                                    navController.navigate("userSelection")
+                                })
+                            NavigationDrawerItem(label = { Text("Card Game") },
+                                selected = false,
+                                onClick = {
+                                    toggleDrawer()
+                                    navController.navigate("cardMain")
+                                })
+                            NavigationDrawerItem(label = { Text("Spin the Wheel Game") },
+                                selected = false,
+                                onClick = {
+                                    toggleDrawer()
+                                    navController.navigate("spinWheelScreen")
+                                })
+                            NavigationDrawerItem(label = { Text("TruthOrDare") },
+                                selected = false,
+                                onClick = {
+                                    toggleDrawer()
+                                    navController.navigate("truthOrDare")
+                                })
+                            HorizontalDivider()
+                        }
+                    }
+                },
+            ) {
+                CompositionLocalProvider(
+                    value = LocalLayoutDirection provides LayoutDirection.Ltr
+                ) {
+                    //Screen Inhalt
+                    ScreenMenuItem(scope, drawerState)
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "userSelection",
+                    ) {
+                        composable("mainScreen") {
+                            StartScreen()
                         }
 
-                        HorizontalDivider()
+                        composable("userSelection") { backStackEntry ->
+                            val test =
+                                backStackEntry.arguments?.getString("playerid")?.toIntOrNull()
+                            UserSelection(viewModel, navController)
+                            //UserSelection(viewModel)
+                        }
 
-                        NavigationDrawerItem(label = { Text("Start Screen") },
-                            selected = false,
-                            onClick = {
-                                toggleDrawer()
-                                navController.navigate("mainScreen")
-                            })
-                        NavigationDrawerItem(label = { Text("Spielerauswahl") },
-                            selected = false,
-                            onClick = {
-                                toggleDrawer()
-                                navController.navigate("userSelection")
-                            })
-                        NavigationDrawerItem(label = { Text("Card Game") },
-                            selected = false,
-                            onClick = {
-                                toggleDrawer()
-                                navController.navigate("cardGame")
-                            })
-                        NavigationDrawerItem(label = { Text("Spin the Wheel Game") },
-                            selected = false,
-                            onClick = {
-                                toggleDrawer()
-                                navController.navigate("spinWheelScreen")
-                            })
-                        HorizontalDivider()
-                    }
-                }
-            },
-        ) {
-            CompositionLocalProvider(
-                value = LocalLayoutDirection provides LayoutDirection.Ltr
-            ) {
-                //Screen Inhalt
-                ScreenMenuItem(scope, drawerState)
+                        composable("cardMain") {
+                            CardMain(viewModel)
+                            //CardGenerator(viewModel)
+                        }
 
-                NavHost(
-                    navController = navController,
-                    startDestination = "userSelection"
-                ) {
-                    composable("mainScreen") {
-                        StartScreen()
-                    }
-
-                    composable("userSelection") { backStackEntry ->
-                        val test = backStackEntry.arguments?.getString("playerid")?.toIntOrNull()
-                        UserSelection(viewModel, navController)
-                        //UserSelection(viewModel)
-                    }
-
-                    composable("cardGame") {
-                        CardGenerator(viewModel)
-                    }
-
-                    composable("spinWheelScreen") {
-                        SpinWheelScreen()
+                        composable("spinWheelScreen") {
+                            SpinWheelScreen()
+                        }
                     }
                 }
             }

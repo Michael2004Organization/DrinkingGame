@@ -59,6 +59,9 @@ fun UserSelection(
     val textBackground: Color = colorResource(id = R.color.green)
     val textColor: Color = Color.White
 
+    //NavController
+    val cardGame = "cardMain"
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -161,7 +164,7 @@ fun UserSelection(
 //
 //                        }
 
-                        navController.navigate("cardGame")
+                        navController.navigate("$cardGame")
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = textBackground

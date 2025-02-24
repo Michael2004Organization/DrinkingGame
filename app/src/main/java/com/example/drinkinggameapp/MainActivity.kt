@@ -1,6 +1,5 @@
 package com.example.drinkinggameapp
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,13 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.room.Room
-import com.example.drinkinggameapp.Database.AppDatabase
 import com.example.drinkinggameapp.Models.SpinWheelItem
 import com.example.drinkinggameapp.ViewModels.MainViewModel
-import com.example.drinkinggameapp.ViewModels.PlayersViewModel
-import com.example.drinkinggameapp.ViewModels.QuestionViewModelFactory
-import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
 import com.example.drinkinggameapp.Views.MainScreen
 import com.example.drinkinggameapp.Views.SpinWheelState
 import com.example.drinkinggameapp.Views.WheelSpinCompleteFile
@@ -69,7 +63,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun SpinWheelScreen() {
     val items = remember1 {
