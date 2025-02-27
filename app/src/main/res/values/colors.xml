@@ -10,4 +10,6 @@
     <color name="darkBlue">#1d1f2a</color>
     <color name="orange">#FF8800</color>
     <color name="green">#009000</color>
+    <color name="appBlack">#3d3d3d</color>
+    <color name="blackBlue">#2a4865</color>
 </resources>

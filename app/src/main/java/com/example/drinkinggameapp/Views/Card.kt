@@ -2,7 +2,9 @@ package com.example.drinkinggameapp.Views
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,13 +16,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -38,15 +42,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.example.drinkinggameapp.R
 import com.example.drinkinggameapp.ViewModels.MainViewModel
 import com.example.drinkinggameapp.ViewModels.QuestionsViewModel
@@ -68,10 +79,11 @@ fun width(): Int {
 //@Preview
 @Composable
 fun CardMain(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    navController: NavController
 ) {
-    val timer: Long = 1000
-    TimedLayout(timer)
+    val timer: Long = 100
+    //TimedLayout(timer)
 
     var showCard by remember { mutableStateOf(value = false) }
     LaunchedEffect(key1 = Unit) {
@@ -80,7 +92,7 @@ fun CardMain(
     }
 
     if (showCard) {
-        CardGenerator(viewModel = viewModel)
+        CardGenerator(viewModel = viewModel, navController = navController)
     }
 }
 
@@ -188,125 +200,97 @@ fun TimedLayout(
 //@Preview
 @Composable
 fun CardGenerator(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    navController: NavController
 ) {
+    //States
     val randomPlayer by viewModel.randomPlayer.collectAsState()
-    val question by viewModel.questionsViewModel.currentQuestion.collectAsState()
-    var rotated by remember { mutableStateOf(false) }
+    val truthQuestion by viewModel.questionsViewModel.currentTruthQuestion.collectAsState()
+    val dareCommand by viewModel.questionsViewModel.currentDareCommand.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.getRandomPlayer2()
-    }
-
+    //Remembers
+    var rotated by remember { mutableStateOf(value = false) }
     val rotation by animateFloatAsState(
         targetValue = if (rotated) 180f else 0f,
         animationSpec = tween(500)
     )
 
+    var text by remember { mutableStateOf(value = "Wahrheit oder Pflicht") }
+
+    //Functions
     fun toggleFlip() {
         rotated = !rotated
     }
 
-    //Colors, usw.
-    val backgroundColor: Color = colorResource(R.color.black)
+    //Values
+    val backgroundColor: Color = Color.Black
+    val roundedCornersDP = 25.dp
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = backgroundColor),
-        bottomBar = { BottomRow() }
+            .fillMaxSize(),
+        bottomBar = {
+            Spacer(
+                modifier = Modifier
+                    .height(40.dp)
+                    .fillMaxWidth()
+                    .background(color = backgroundColor)
+            )
+        }
     ) { paddingValues ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .background(backgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Red)
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = randomPlayer?.playerName ?: "No Player left",
-                    color = Color.White,
-                    fontSize = 35.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 10.dp)
+                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
                     .graphicsLayer {
                         rotationY = rotation
                         cameraDistance = 8 * density
-                    }
-                    .clickable {
-                        rotated = !rotated
                     },
-
+                shape = RoundedCornerShape(roundedCornersDP),
                 elevation = CardDefaults.cardElevation(
-                    defaultElevation = 50.dp
+                    defaultElevation = 4.dp,
                 ),
             ) {
-                var questionText: String = "testQ"
-                questionText = question?.question ?: "No Questions available!"
-
-                var answersText: String = "testA"
-                answersText = question?.answer ?: "No Questions available!"
+                var player = randomPlayer?.playerName ?: "No Player"
+                if(player.contains("No Player")){
+                    viewModel.getRandomPlayer2()
+                }
 
                 if (!rotated) {
-                    //QuestionCard(viewModel, questionText)
                     GenerallCard(
-                        viewModel.questionsViewModel,
-                        "Frage:",
-                        questionText,
-                        { toggleFlip() })
-                    //GenerallCard("Frage:", questionText)
+                        viewModel = viewModel.questionsViewModel,
+                        navController = navController,
+                        cardHeaderText = "Frage:",
+                        cardBodyText = text,
+                        randomPlayer = player,
+                        onClick = { value ->
+                            if (value.contains("Truth")) {
+                                text = truthQuestion?.text ?: "Keine Fragen mehr verfügbar."
+                            } else {
+                                text = dareCommand?.text ?: "Keine Fragen mehr verfügbar."
+                            }
+                        },
+                        onClickNext = {
+                            viewModel.getRandomPlayer2()
+                            text = "Wahrheit oder Pflicht"
+                        })
                 } else {
-                    //AnswerCard(viewModel, rotation, answersText)
-                    GenerallCard(
-                        viewModel.questionsViewModel,
-                        "Antwort:",
-                        answersText,
-                        { toggleFlip() })
-                    //GenerallCard("Antwort:", answersText)
+//                    GenerallCard(
+//                        viewModel = viewModel.questionsViewModel,
+//                        navController = navController,
+//                        cardHeaderText = "Antwort:",
+//                        cardBodyText = text,
+//                        randomPlayer = randomPlayer?.playerName ?: "No Player left",
+//                        onClick = { toggleFlip() })
                 }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-fun BottomRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Green)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Button(
-            onClick = {}
-        ) {
-            Text(
-                text = "Wahrheit"
-            )
-        }
-        Button(
-            onClick = {}
-        ) {
-            Text(
-                text = "Pflicht"
-            )
         }
     }
 }
@@ -315,110 +299,178 @@ fun BottomRow() {
 @Composable
 fun GenerallCard(
     viewModel: QuestionsViewModel,
-    cardHeaderText: String,
-    cardBodyText: String,
-    onClick: () -> Unit
+    navController: NavController,
+    cardHeaderText: String = "Frage: ",
+    cardBodyText: String = "No Question available",
+    randomPlayer: String = "",
+    onClick: (String) -> Unit = {},
+    onClickNext: () -> Unit = {}
 ) {
+    var isAction by remember { mutableStateOf(value = false) }
+
     val isQuestionCard = cardHeaderText.contains("Frage")
     val rotation = if (isQuestionCard) 0f else 180f
     val horizontalArrangement = if (isQuestionCard) Arrangement.Start else Arrangement.End
 
-    //Colors
-    val headerBackground = Color.Black
-    val headerTextColor = Color.White
+    //Rounded corners
+    val roundedCornersDP = 25.dp
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-    ) {
-        //Card Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(headerBackground),
-            horizontalArrangement = horizontalArrangement,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier
-                    .graphicsLayer { rotationY = rotation }
-                    .padding(start = 7.dp),
-                text = cardHeaderText,
-                color = headerTextColor,
-                fontSize = 25.sp
+            .background(
+                color = Color.Black,
+                shape = RoundedCornerShape(roundedCornersDP)
             )
-        }
-
-        //Card TextBody
+    ) {
+        //Body
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(10.dp),
+                //.padding(15.dp)
+                .background(
+                    color = colorResource(R.color.appBlack),
+                    shape = RoundedCornerShape(roundedCornersDP)
+                ),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                modifier = Modifier
-                    .graphicsLayer { rotationY = rotation },
-                text = cardBodyText,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        //Card Foot
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Green)
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .graphicsLayer { rotationY = 180f },
-                onClick = { viewModel.previousQuestion() }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Previous"
-                )
-            }
-
-            //Answer Btn
-            if (isQuestionCard) {
-                Box(
+            Column {
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .clickable { onClick() }
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(12.dp)
+                        .fillMaxWidth()
+                        .weight(0.1f)
+                        .padding(start = 10.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(route = "userSelection")
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(50.dp)
+                                .border(1.dp, Color.White, shape = CircleShape)
+                                .padding(5.dp)
                         )
-                        .padding(vertical = 10.dp),
-                    contentAlignment = Alignment.Center
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.8f)
+                        .background(colorResource(R.color.appBlack)),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Antwort anzeigen",
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color.Magenta)) {
+                                append(randomPlayer)
+                            }
+                            withStyle(style = SpanStyle(color = Color.White)) {
+                                append(", $cardBodyText")
+                            }
+                        },
+                        modifier = Modifier
+                            .graphicsLayer { rotationY = rotation }
+                            .width(200.dp),
                         textAlign = TextAlign.Center,
-                        color = Color.Black
+                        fontSize = 25.sp
                     )
                 }
-            } else {
-                Spacer(modifier = Modifier.weight(1f))
-            }
 
-            IconButton(
-                modifier = Modifier
-                    .weight(1f),
-                onClick = { viewModel.nextQuestion() }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Next"
-                )
+                if (!isAction) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp, end = 10.dp, bottom = 5.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        val roundedCornersDP = 30.dp
+
+                        //Wahrheit
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 5.dp),
+                            shape = RoundedCornerShape(roundedCornersDP),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Black,
+                                contentColor = Color.White
+                            ),
+                            onClick = {
+                                viewModel.nextTruthQuestion()
+                                isAction = true
+                                onClick("Truth")
+                            }
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                text = "Wahrheit",
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        //Pflicht
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 5.dp),
+                            shape = RoundedCornerShape(roundedCornersDP),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Black,
+                                contentColor = Color.White
+                            ),
+                            onClick = {
+                                viewModel.nextDareCommand()
+                                isAction = true
+                                onClick("Dare")
+                            }
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                text = "Pflicht",
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp, end = 10.dp, bottom = 5.dp),
+                            //.height(50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Blue,
+                                contentColor = Color.Black
+                            ),
+                            shape = RoundedCornerShape(25.dp),
+                            onClick = {
+                                isAction = false
+                                onClickNext()
+                            },
+                        ) {
+                            Text(
+                                text = "Weiter",
+                                color = Color.White,
+                                fontSize = 20.sp
+                            )
+                        }
+                    }
+                }
             }
         }
     }

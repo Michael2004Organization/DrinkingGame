@@ -8,6 +8,6 @@ data class Questions(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val question: String,
-    val answer: String
+    val text: String,
+    val isDare: Boolean
 )

@@ -24,10 +24,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val playersList: Flow<List<Players>> = dao.playersDao().getAllPlayers()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val questionsList: StateFlow<List<Questions>> = dao.questionsDao().getAllQuestions()
+    val truthQuestions: StateFlow<List<Questions>> = dao.questionsDao().getAllTruthQuestions()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    //Questions
+    val dareCommands: StateFlow<List<Questions>> = dao.questionsDao().getAllDareCommands()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
 
     //Players

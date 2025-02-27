@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
         val viewModel: MainViewModel = viewModel()
 
         MainScreen(viewModel)
+        //MainScreen()
     }
 }
 

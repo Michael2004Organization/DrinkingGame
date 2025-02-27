@@ -21,7 +21,7 @@ interface PlayersDao {
     @Update
     suspend fun updatePlayer(players: Players)
 
-    @Query("Select * from players where playerQuestioned = 1 order by Random() limit 1")
+    @Query("Select * from players where playerQuestioned = 0 order by Random() limit 1")
     suspend fun getRandomPlayer(): Players
 
     @Delete
@@ -30,9 +30,18 @@ interface PlayersDao {
 
 @Dao
 interface QuestionsDao {
-    @Query("Select * from questions order by question ASC")
-    fun getAllQuestions(): Flow<List<Questions>>
+    //Truth
+    @Query("Select * from questions where isDare = 0 order by id ASC")
+    fun getAllTruthQuestions(): Flow<List<Questions>>
 
-    @Query("Select COUNT(*) from questions")
-    fun getQuestionAmountInTable(): Long
+    //Dare
+    @Query("Select * from questions where isDare = 1 order by id ASC")
+    fun getAllDareCommands(): Flow<List<Questions>>
+
+    //General
+    @Query("Select COUNT(*) from questions where isDare = 0")
+    fun getCountTruth(): Long
+
+    @Query("Select COUNT(*) from questions where isDare = 1")
+    fun getCountDare(): Long
 }

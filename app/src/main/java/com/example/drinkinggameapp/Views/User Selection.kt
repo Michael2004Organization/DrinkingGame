@@ -1,5 +1,7 @@
 package com.example.drinkinggameapp.Views
 
+import android.app.Application
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,14 +36,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.drinkinggameapp.Database.Players
 import com.example.drinkinggameapp.R
 import com.example.drinkinggameapp.ViewModels.MainViewModel
@@ -52,10 +57,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserSelection(
     viewModel: MainViewModel,
-    navController: NavController
+    navController: NavController = rememberNavController()
 ) {
     //Colors
-    val backgroundColor: Color = colorResource(id = R.color.orange)
+    val backgroundColor: Color = colorResource(id = R.color.black)
+    val backgroundAppColor: Color = colorResource(id = R.color.appBlack)
     val textBackground: Color = colorResource(id = R.color.green)
     val textColor: Color = Color.White
 
@@ -65,7 +71,6 @@ fun UserSelection(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 50.dp)
     ) { padding ->
         Column(
             modifier = Modifier
@@ -76,7 +81,7 @@ fun UserSelection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 0.dp),
+                    .padding(top = 10.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -94,8 +99,11 @@ fun UserSelection(
                     modifier = Modifier
                         .fillMaxWidth()
                         //.clip(shape = RoundedCornerShape(20.dp))
-                        .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp)
-                        .background(Color.White, shape = RoundedCornerShape(15.dp))
+                        .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 5.dp)
+                        .background(
+                            color = backgroundAppColor,
+                            shape = RoundedCornerShape(15.dp)
+                        )
                         .height(600.dp),
                 ) {
                     Row(
@@ -103,7 +111,7 @@ fun UserSelection(
                             .fillMaxWidth()
                             .height(30.dp)
                             .background(
-                                color = textBackground,
+                                color = backgroundAppColor,
                                 shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
                             ),
                         verticalAlignment = Alignment.CenterVertically
@@ -124,7 +132,7 @@ fun UserSelection(
 
                     HorizontalDivider(
                         modifier = Modifier
-                            .padding(top = 20.dp, bottom = 0.dp),
+                            .padding(top = 5.dp, bottom = 0.dp),
                         thickness = 2.5.dp,
                         color = Color.Black
                     )
@@ -152,27 +160,25 @@ fun UserSelection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 35.dp),
+                    .fillMaxHeight(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .shadow(elevation = 12.dp),
                     onClick = {
-
-//                        val testP = viewModel.getRandomPlayer { player->
-//
-//                        }
-
                         navController.navigate("$cardGame")
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = textBackground
-                    )
+                        containerColor = backgroundAppColor
+                    ),
+                    border = BorderStroke(width = 1.dp, color = Color.White)
                 ) {
                     Text(
                         text = "Spiel starten",
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = textColor
                     )
                 }
             }
@@ -183,7 +189,7 @@ fun UserSelection(
 @Composable
 fun player(
     viewModel: MainViewModel,
-    player: String,
+    player: String = "",
     isUserAdd: Boolean,
     onClick: () -> Unit
 ) {
@@ -208,6 +214,7 @@ fun player(
             Icon(
                 personIcon,
                 contentDescription = "Person Icon",
+                tint = Color.White,
                 modifier = Modifier
                     .fillMaxSize()
             )
@@ -240,6 +247,7 @@ fun player(
                             modifier = Modifier
                                 .fillMaxSize(),
                             text = "Playername",
+                            color = Color.Black,
                             fontSize = 25.sp,
                             textAlign = TextAlign.Center
                         )
@@ -249,7 +257,7 @@ fun player(
                 Text(
                     text = player,
                     style = TextStyle(
-                        color = Color.Black,
+                        color = Color.White,
                         fontSize = 25.sp
                     )
                 )
@@ -278,7 +286,8 @@ fun player(
                 ) {
                     Icon(
                         Icons.Rounded.Add,
-                        contentDescription = "",
+                        tint = Color.White,
+                        contentDescription = "Add new Player",
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(50.dp),
@@ -290,6 +299,7 @@ fun player(
                 ) {
                     Icon(
                         Icons.Rounded.Delete,
+                        tint = Color.White,
                         contentDescription = "Delete Player",
                         modifier = Modifier
                             .fillMaxSize()

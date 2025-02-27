@@ -24,7 +24,7 @@ class QuestionsViewModel(
 
     init {
         viewModelScope.launch {
-            dao.getAllQuestions().collect() { questions ->
+            dao.getAllTruthQuestions().collect() { questions ->
                 Log.d("RoomTest", "Question in DB: $questions")
             }
         }
@@ -39,50 +39,74 @@ class QuestionsViewModel(
         }
     }
 
-    private val questions = dao.getAllQuestions().stateIn(
+    // Truth
+    private val truthQuestions = dao.getAllTruthQuestions().stateIn(
         viewModelScope,
         SharingStarted.Lazily,
         emptyList()
     )
 
-    private var currentIndex = MutableStateFlow(0)
+    private var currentTruthIndex = MutableStateFlow(value = 0)
 
-    val currentQuestion = combine(questions, currentIndex) { list, index ->
+    val currentTruthQuestion = combine(truthQuestions, currentTruthIndex) { list, index ->
         list.getOrNull(index)
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-//    fun getQuestion(){
-//        currentIndex.update { it }
+    fun nextTruthQuestion() {
+        GlobalScope.launch(Dispatchers.Main) {
+            val truthCount = withContext(Dispatchers.IO) {
+                dao.getCountTruth().toInt()
+            }
+
+            currentTruthIndex.update { it + 1 }
+
+            if (currentTruthIndex.value > (truthCount - 1)) {
+                currentTruthIndex.update { it - it }
+            }
+        }
+    }
+
+
+    // Dare
+    private val dareCommand = dao.getAllDareCommands().stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        emptyList()
+    )
+
+    private var currentDareIndex = MutableStateFlow(value = 0)
+
+    val currentDareCommand = combine(dareCommand, currentDareIndex) { list, index ->
+        list.getOrNull(index)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    fun nextDareCommand() {
+        GlobalScope.launch(Dispatchers.Main) {
+            val dareCount = withContext(Dispatchers.IO) {
+                dao.getCountDare().toInt()
+            }
+
+            currentDareIndex.update { it + 1 }
+
+            if (currentDareIndex.value > (dareCount - 1)) {
+                currentDareIndex.update { it - it }
+            }
+        }
+    }
+
+//    fun previousQuestion() {
+//        GlobalScope.launch(Dispatchers.Main) {
+////            val questionCount = withContext(Dispatchers.IO) {
+////                dao.getQuestionAmountInTable().toInt()
+////            }
+//
+//            currentIndex.update { it - 1 }
+//
+//            if (currentIndex.value < 1) {
+//                currentIndex.update { it - it }
+//            }
+//        }
 //    }
-
-    fun nextQuestion() {
-        GlobalScope.launch(Dispatchers.Main) {
-            val questionCount = withContext(Dispatchers.IO) {
-                dao.getQuestionAmountInTable().toInt()
-
-            }
-
-            currentIndex.update { it + 1 }
-
-            if (currentIndex.value >= questionCount) {
-                currentIndex.update { it - (it + 1) }
-            }
-        }
-    }
-
-    fun previousQuestion() {
-        GlobalScope.launch(Dispatchers.Main) {
-            val questionCount = withContext(Dispatchers.IO) {
-                dao.getQuestionAmountInTable().toInt()
-            }
-
-            currentIndex.update { it - 1 }
-
-            if (currentIndex.value < 1) {
-                currentIndex.update { it - (it + 1) }
-            }
-        }
-    }
 }
 
 class QuestionViewModelFactory(

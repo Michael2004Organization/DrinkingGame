@@ -65,7 +65,7 @@ dependencies {
     //Room
     val room_version = "2.6.1"
     implementation("androidx.room:room-ktx:$room_version")
-    kapt ("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 
     //immutable
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
@@ -84,6 +84,9 @@ dependencies {
 
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.7.4")
+
+    //Material3
+    implementation("androidx.compose.material3:material3:1.3.1")
 
 //    //
 //    androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
