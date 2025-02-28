@@ -157,7 +157,8 @@ fun MainScreen(
                                         listOf("Start Screen", "mainScreen"),
                                         listOf("Spielerauswahl", "userSelection"),
                                         listOf("Card Game", "cardMain"),
-                                        listOf("Spin the Wheel Game", "spinWheelScreen")
+                                        listOf("Spin the Wheel Game", "spinWheelScreen"),
+                                        listOf("Add New Card", "addNewCard"),
                                     )
 
                                     for (items in navigationItems) {
@@ -205,6 +206,11 @@ fun MainScreen(
                                 composable("spinWheelScreen") {
                                     currentViewName.value = "Wheel of Destiny"
                                     SpinWheelScreen()
+                                }
+
+                                composable("addNewCard") {
+                                    currentViewName.value = "Add New Card"
+                                    AddNewCard()
                                 }
                             }
                         }

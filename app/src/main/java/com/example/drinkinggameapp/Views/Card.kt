@@ -2,10 +2,8 @@ package com.example.drinkinggameapp.Views
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,17 +20,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,14 +45,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -107,6 +109,7 @@ fun GreetingPreview() {
         ) {
             //MainScreen()
             //TruthOrDare()
+            AddNewCard()
         }
     }
 }
@@ -259,7 +262,7 @@ fun CardGenerator(
                 ),
             ) {
                 var player = randomPlayer?.playerName ?: "No Player"
-                if(player.contains("No Player")){
+                if (player.contains("No Player")) {
                     viewModel.getRandomPlayer2()
                 }
 
@@ -341,16 +344,39 @@ fun GenerallCard(
                         .fillMaxWidth()
                         .weight(0.1f)
                         .padding(start = 10.dp),
-                    horizontalArrangement = Arrangement.Start,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
+                        modifier = Modifier
+                            .weight(1f),
                         onClick = {
                             navController.navigate(route = "userSelection")
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
+                            contentDescription = "",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(50.dp)
+                                .border(1.dp, Color.White, shape = CircleShape)
+                                .padding(5.dp)
+                                .align(alignment = Alignment.CenterVertically)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1.5f))
+
+                    IconButton(
+                        modifier = Modifier
+                            .weight(1f),
+                        onClick = {
+                            navController.navigate(route = "addNewCard")
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AddCircle,
                             contentDescription = "",
                             tint = Color.White,
                             modifier = Modifier
@@ -472,6 +498,101 @@ fun GenerallCard(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun AddNewCard() {
+    val backgroundColor = Color.Black
+    val textColor = Color.White
+    val iconColor = Color.White
+
+    var newCardValue by remember { mutableStateOf("") }
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+    ) { paddingValue ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValue)
+                .background(color = backgroundColor)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .weight(0.8f)
+                        .padding(end = 25.dp),
+                    text = "Neue Karte hinzufügen",
+                    color = Color.White,
+                    textAlign = TextAlign.End,
+                    fontSize = 24.sp
+                )
+
+                IconButton(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .padding(end = 5.dp),
+                    onClick = {}
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .border(width = 1.dp, shape = CircleShape, color = iconColor)
+                            .size(48.dp)
+                    )
+                }
+            }
+
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(10.dp),
+                color = Color.White,
+                thickness = 1.dp
+            )
+
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .padding(start = 20.dp, end = 20.dp),
+                value = newCardValue,
+                textStyle = TextStyle(textAlign = TextAlign.Center),
+                onValueChange = {
+                    if(newCardValue.length <= 454){
+                        newCardValue = it
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = backgroundColor,
+                    unfocusedContainerColor = backgroundColor,
+                    unfocusedPlaceholderColor = textColor,
+                    focusedPlaceholderColor = textColor,
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor,
+                    cursorColor = Color.Red
+                ),
+                placeholder = {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = "Neu Karte schreiben...",
+                        color = textColor,
+                        textAlign = TextAlign.Center
+                    )
+                },
+
+            )
         }
     }
 }
